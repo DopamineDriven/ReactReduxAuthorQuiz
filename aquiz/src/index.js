@@ -92,8 +92,15 @@ const resetState = () => {
     }
 };
 
-let state = resetState();
+// reducer takes existing state and action
+// applies action to existing state to produce a new state
+const reducer = (state, action) => {
+    return state
+};
 
+// creating a store, establishing a reducer function
+let store = Redux.createStore(reducer)
+let state = resetState();
 // Determine if answer is correct or incorrect
 // to assess, must inspect turnData books collection
 async function onAnswerSelected(answer) {
@@ -107,13 +114,16 @@ async function onAnswerSelected(answer) {
 };
 
 // Wraps Author Quiz element
+// wrapping component in ReactRedux.Provider to give access to store
 const App = () => {
-    return <AuthorQuiz {...state} 
+    return <ReactRedux.Provider store={store}> 
+    <AuthorQuiz {...state} 
     onAnswerSelected={onAnswerSelected}
     onContinue={() => {
         state = resetState();
         render();
     }} />
+    </ReactRedux.Provider>
 }
 
 // wrapper function for onAddAuthor
