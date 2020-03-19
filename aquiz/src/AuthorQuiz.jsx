@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+// use {connect} to link react component to redux store
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types'
 import './App.css';
 import './bootstrap.min.css'
@@ -30,7 +32,7 @@ const Book = ({ title, onClick }) => {
 // react can distinguish individual elements
 // onAnswerSelected is a prop of the Turn component which means it must
 // be provided by the AuthorQuiz component
-const Turn = ({ author, books, highlight, onAnswerSelected }) => {
+function Turn ({ author, books, highlight, onAnswerSelected }) {
   const highlightToBgColor = (highlight) => {
     const mapping = {
       'none': '',
@@ -94,12 +96,29 @@ const Footer = () => {
   )
 }
 
-// onAnswerSelected added as a prop of the AuthorQuiz
-const AuthorQuiz = ({ turnData, highlight, onAnswerSelected, onContinue }) => {
-  // container-fluid specifies fluid layout for application
-  // Hero component for Header
-  // Turn component for the central game mechanics
-  // Continue component for button that moves user along 
+const mapStateToProps = async (state) => {
+    return {
+      turnData: state.turnData,
+      highlight: state.highlight
+    }
+}
+
+// by convention, actions are objects with a property called type
+const mapDispatchToProps = async (dispatch) => {
+    return {
+      onAnswerSelected: (answer) => {
+        dispatch({ type: 'ANSWER_SELECTED', answer })
+      },
+      onContinue: () => {
+        dispatch({ type: 'CONTINUE' })
+      }
+    }
+}
+
+
+// wrapping AuthorQuiz in call to connect function
+const AuthorQuiz = connect(mapStateToProps, mapDispatchToProps)(
+  function ({ turnData, highlight, onAnswerSelected, onContinue }) {
   return (
     <div className="container-fluid">
       <Hero />
@@ -111,6 +130,8 @@ const AuthorQuiz = ({ turnData, highlight, onAnswerSelected, onContinue }) => {
       <Footer />
     </div>
   )
-}
+});
+
+
 
 export default AuthorQuiz;

@@ -94,8 +94,30 @@ const resetState = () => {
 
 // reducer takes existing state and action
 // applies action to existing state to produce a new state
-const reducer = (state, action) => {
-    return state
+const reducer = (
+    state = { authors, turnData: getTurnData(authors), highlight: '' }, 
+    action) => {
+      // reducers as switch statement, switch on the type of the action
+      switch (action.type) {
+        case 'ANSWER_SELECTED':
+          const isCorrect = state.turnData.author.books.some((book) => book === action.answer);
+          return Object.assign(
+            // return empty object first
+            {},
+            state, {
+              highlight: isCorrect ? 'correct' : 'incorrect'
+            });
+        case 'CONTINUE': 
+          return Object.assign({}, state, {
+            highlight: '',
+            turnData: getTurnData(state.authors)
+            });
+        case 'ADD_AUTHOR':
+          return Object.assign({}, state, {
+            authors: state.authors.concat([action.author])
+          });
+        default: return state
+      }
 };
 
 // creating a store, establishing a reducer function
@@ -117,12 +139,7 @@ async function onAnswerSelected(answer) {
 // wrapping component in ReactRedux.Provider to give access to store
 const App = () => {
     return <ReactRedux.Provider store={store}> 
-    <AuthorQuiz {...state} 
-    onAnswerSelected={onAnswerSelected}
-    onContinue={() => {
-        state = resetState();
-        render();
-    }} />
+    <AuthorQuiz />
     </ReactRedux.Provider>
 }
 
